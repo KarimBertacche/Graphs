@@ -124,7 +124,7 @@ class Graph:
             v = path[-1]
             # check if the current vertex is in the visited set
             if v not in visited:
-                # pass it to the visited set
+                # if not pass it to the visited set
                 visited.add(v)
                 # check if the vertex matches the destination vertex
                 if v == destination_vertex:
@@ -143,7 +143,32 @@ class Graph:
         starting_vertex to destination_vertex in
         depth-first order.
         """
-        pass  # TODO
+        # instantiate a stack
+        s = Stack()
+        # pass the starting index inside the stack using a list so we can hold the path for each vertex
+        s.push([ starting_vertex ])
+        # instantiate a visited set
+        visited = set()
+        # while there are paths in the stack keep iterating 
+        while s.size() > 0:
+            # grab the last inserted path and store it in a path variable
+            path = s.pop()
+            # grab the current vertex from the end(last index) of the path 
+            v = path[-1]
+            # check if the current vertex is in the visited set
+            if v not in visited:
+                # if not pass it to the visited set
+                visited.add(v)
+                # check if the vertex matches the destination vertex
+                if v == destination_vertex:
+                    # if they match, return the path
+                    return path
+                # else move to the neighbour of the current vertex and repeat the process until match is found
+                for neighbour in self.get_neighbors(v):
+                    # pass to the stack a new instance of the path + neighbour
+                    # the asterix is the same as the spread operator in js
+                    # is called splat and is an alternative to the copy method
+                    s.push([*path, neighbour])
 
     def dfs_recursive(self, starting_vertex, destination_vertex):
         """

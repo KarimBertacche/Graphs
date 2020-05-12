@@ -43,7 +43,7 @@ class Graph:
         # create a queue instance
         q = Queue()
         # add to the queue the starting vertex
-        q.enqueue(starting_vertex_id)
+        q.enqueue(starting_vertex)
         # instantiate a visited set to avoid duplicates and better performance
         visited = set()
         # while the queue is not empty
@@ -52,12 +52,14 @@ class Graph:
             v = q.dequeue()
             # if that vertex has not been visited
             if v not in visited:
+                # print vertex
+                print(v)
                 # mark it as visited by passing it to the set of visited vertex
                 visited.add(v)
                 # iterate over each neighbour of the current vertex
-                for next_vertex in self.get_neighbors(v):
+                for neighbour in self.get_neighbors(v):
                     # and pass those to the queue 
-                    q.enqueue(next_vertex)
+                    q.enqueue(neighbour)
 
     def dft(self, starting_vertex):
         """
@@ -67,7 +69,7 @@ class Graph:
         # create a new stack instance
         s = Stack()
         # add to the stack the starting vertex
-        s.push(starting_vertex_id)
+        s.push(starting_vertex)
         # instantiate a visited set to avoid duplicates and better performance
         visited = set()
         # while the stack is not empty
@@ -76,12 +78,14 @@ class Graph:
             v = s.pop()
             # if that vertex has not been visited
             if v not in visited:
+                # print vertex
+                print(v)
                 # mark it as visited by passing it to the set of visited vertex
                 visited.add(v)
                 # iterate over each neighbour of the current vertex
-                for next_vertex in self.get_neighbors(v):
+                for neighbor in self.get_neighbors(v):
                     # and pass those to the queue 
-                    s.push(next_vertex)
+                    s.push(neighbor)
 
     def dft_recursive(self, starting_vertex, visited=None):
         """
@@ -99,6 +103,8 @@ class Graph:
         if starting_vertex not in visited:
             # if not pass it to the visited set
             visited.add(starting_vertex)
+            # print starting vertex
+            print(starting_vertex)
             # iterate over each neighbour vertex to the starting one
             for neighbor in self.get_neighbors(starting_vertex):
                 # and call dft_recursive on each neighbour
@@ -131,11 +137,11 @@ class Graph:
                     # if they match, return the path
                     return path
                 # else move to the neighbour of the current vertex and repeat the process until match is found
-                for neighbour in self.get_neighbors(v):
+                for neighbor in self.get_neighbors(v):
                     # pass to the queue a new instance of the path + neighbour
                     # the asterix is the same as the spread operator in js
                     # is called splat and is an alternative to the copy method
-                    q.enqueue([*path, neighbour])
+                    q.enqueue([*path, neighbor])
 
     def dfs(self, starting_vertex, destination_vertex):
         """
@@ -164,13 +170,13 @@ class Graph:
                     # if they match, return the path
                     return path
                 # else move to the neighbour of the current vertex and repeat the process until match is found
-                for neighbour in self.get_neighbors(v):
+                for neighbor in self.get_neighbors(v):
                     # pass to the stack a new instance of the path + neighbour
                     # the asterix is the same as the spread operator in js
                     # is called splat and is an alternative to the copy method
-                    s.push([*path, neighbour])
+                    s.push([*path, neighbor])
 
-    def dfs_recursive(self, starting_vertex, destination_vertex):
+    def dfs_recursive(self, starting_vertex, destination_vertex, visited=None, path=None):
         """
         Return a list containing a path from
         starting_vertex to destination_vertex in
@@ -178,7 +184,39 @@ class Graph:
 
         This should be done using recursion.
         """
-        pass  # TODO
+        # if when first invoked the visited set is equal to None
+        if visited is None:
+            # then instantiate a new visited set
+            visited = set()
+        # same as for the visited we check if the function is been invoked and if the path is None
+        if path is None:
+            # then create a new instance using a list
+            path = list()
+
+        # check if the starting vertex is not in the visited
+        if starting_vertex not in visited:
+            # pass it to the visited set
+            visited.add(starting_vertex)
+            # we create a copy of the path and add the starting vertex to it
+            path_copy = [*path, starting_vertex]
+
+            # if the starting vertex matches the destination vertex
+            if starting_vertex == destination_vertex:
+                # then return the path
+                return path_copy
+
+            # else we iterate over each neighbour of the starting vertex
+            for neighbour in self.get_neighbors(starting_vertex):
+                # pass to a variable the recursive invokation
+                new_path = self.dfs_recursive(neighbour, destination_vertex, visited, path_copy)
+                # check if there is a matching destination in the recursive invokation
+                if new_path is not None:
+                    # then return the path
+                    return new_path
+
+        # else if not found return None
+        return None
+        
 
 if __name__ == '__main__':
     graph = Graph()  # Instantiate your graph

@@ -83,15 +83,18 @@ class Graph:
                     # and pass those to the queue 
                     s.push(next_vertex)
 
-    def dft_recursive(self, starting_vertex):
+    def dft_recursive(self, starting_vertex, visited=None):
         """
         Print each vertex in depth-first order
         beginning from starting_vertex.
 
         This should be done using recursion.
         """
-        # instantiate a visited using set to avoid duplicates and shorten run time
-        visited = set()
+        # on the next invokation, starts from scratch with an empty set has python holds a reference of the previously filled set otherwise
+        if visited is None:
+            # instantiate a visited using set to avoid duplicates and shorten run time
+            visited = set()
+            
         # check if the starting vertex(node) is already in the visited set
         if starting_vertex not in visited:
             # if not pass it to the visited set
@@ -107,7 +110,32 @@ class Graph:
         starting_vertex to destination_vertex in
         breath-first order.
         """
-        pass  # TODO
+        # instantiate a queue
+        q = Queue()
+        # pass the starting index inside the queue using a list so we can hold the path for each vertex
+        q.enqueue([ starting_vertex ])
+        # instantiate a visited set
+        visited = set()
+        # while there are paths in the queue keep iterating 
+        while q.size() > 0:
+            # grab the first path and store it in a path variable
+            path = q.dequeue()
+            # grab the current vertex from the end(last index) of the path 
+            v = path[-1]
+            # check if the current vertex is in the visited set
+            if v not in visited:
+                # pass it to the visited set
+                visited.add(v)
+                # check if the vertex matches the destination vertex
+                if v == destination_vertex:
+                    # if they match, return the path
+                    return path
+                # else move to the neighbour of the current vertex and repeat the process until match is found
+                for neighbour in self.get_neighbors(v):
+                    # pass to the queue a new instance of the path + neighbour
+                    # the asterix is the same as the spread operator in js
+                    # is called splat and is an alternative to the copy method
+                    q.enqueue([*path, neighbour])
 
     def dfs(self, starting_vertex, destination_vertex):
         """

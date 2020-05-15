@@ -1,3 +1,6 @@
+from random import randrange
+from collections import deque
+
 class User:
     def __init__(self, name):
         self.name = name
@@ -43,10 +46,25 @@ class SocialGraph:
         self.users = {}
         self.friendships = {}
         # !!!! IMPLEMENT ME
+        user_comb = []
+        avg = num_users * avg_friendships // 2
 
-        # Add users
+        # Add users	
+        for i in range(0, num_users):
+            self.add_user(f"User {i}")
 
         # Create friendships
+        while len(user_comb) < avg:
+            friend1 = randrange(1, num_users)
+            friend2 = randrange(1, num_users)
+            while friend1 == friend2 or (friend1, friend2) in user_comb or (friend2, friend1) in user_comb:
+                friend1 = randrange(1, num_users)
+                friend2 = randrange(1, num_users)
+            user_comb.append((friend1, friend2))
+
+
+            for i in user_comb:
+                self.add_friendship(i[0], i[1])
 
     def get_all_social_paths(self, user_id):
         """
@@ -57,9 +75,38 @@ class SocialGraph:
 
         The key is the friend's ID and the value is the path.
         """
+        # pass the user id tot he visited dictionary
         visited = {}  # Note that this is a dictionary, not a set
-        # !!!! IMPLEMENT ME
-        return visited
+        # # !!!! IMPLEMENT ME
+
+        # Add all edges of given vertex to queue
+        if self.friendships[user_id]:
+            for i in range(1, self.last_id + 1):
+                visited[i] = self.bfs(user_id, i)
+
+            return visited
+        else:
+            return 'No friends'
+
+    def bfs(self, starting_vert, target_vert):
+        queue = deque()
+        visited = set()
+        queue.append([starting_vert])
+        while queue:
+            # dequeue a list from queue
+            dequeued_list = queue.popleft()
+            path_end = dequeued_list[-1]
+            # mark it as visited
+            if path_end not in visited:
+                # check if target vert == last item in list
+                if path_end == target_vert:
+                    return dequeued_list
+                visited.add(path_end)
+                # enqueue all of it's children
+                for vert in self.friendships[path_end]:
+                    path_copy = list(dequeued_list)
+                    path_copy.append(vert)
+                    queue.append(path_copy)
 
 
 if __name__ == '__main__':
